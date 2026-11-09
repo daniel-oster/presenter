@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  /* Layout: a winter scene band on top, then one column of grouped rows with a star on each row, snow falling over the page, and a sticky bar that collects the starred wishes. Single dark winter theme by choice. */
+  /* Layout: a winter scene band on top, then one column of grouped rows, with snow falling over the page. Single dark winter theme by choice. */
   :root {
     --bg: #0f1733;
     --surface: #17224b;
@@ -66,7 +66,7 @@
     font-family: var(--body);
     font-size: 17px;
     line-height: 1.45;
-    padding-bottom: 96px;
+    padding-bottom: 40px;
   }
   .wrap {
     max-width: 680px;
@@ -121,32 +121,14 @@
   }
   .item {
     display: grid;
-    grid-template-columns: 44px 1fr;
+    grid-template-columns: 1fr;
     gap: 12px;
     align-items: start;
-    padding: 14px 16px 14px 10px;
+    padding: 14px 16px;
     border-top: 1px solid var(--line);
   }
   .item:first-child { border-top: 0; }
-  .item.is-fav { background: color-mix(in srgb, var(--star) 12%, var(--surface)); }
-  .star {
-    width: 44px;
-    height: 44px;
-    border: 0;
-    background: transparent;
-    border-radius: 10px;
-    cursor: pointer;
-    display: grid;
-    place-items: center;
-    color: var(--muted);
-    padding: 0;
-  }
-  .star svg { width: 26px; height: 26px; }
-  .star[aria-pressed="true"] { color: var(--star); }
-  .star:focus-visible, .link:focus-visible, .copy:focus-visible {
-    outline: 3px solid var(--accent);
-    outline-offset: 2px;
-  }
+  .link:focus-visible { outline: 2px solid var(--star); outline-offset: 2px; }
   .body { display: grid; gap: 4px; padding-top: 2px; min-width: 0; }
   .name { font-weight: 700; font-size: 17px; overflow-wrap: anywhere; }
   .desc { color: var(--muted); font-size: 15px; }
@@ -161,56 +143,7 @@
   }
   .link:hover { border-bottom-color: var(--link); }
 
-  .bar {
-    position: fixed;
-    left: 0; right: 0; bottom: 0;
-    background: var(--surface);
-    border-top: 1px solid var(--line);
-    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
-    z-index: 20;
-  }
-  .bar-inner {
-    max-width: 680px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-  .tally { font-weight: 700; font-variant-numeric: tabular-nums; }
-  .tally span { color: var(--star); }
-  .copy {
-    font-family: var(--display);
-    font-weight: 600;
-    font-size: 16px;
-    border: 0;
-    border-radius: 999px;
-    padding: 11px 18px;
-    background: var(--accent);
-    color: #fff;
-    cursor: pointer;
-  }
-  .copy:disabled { opacity: 0.45; cursor: default; }
-  .note { width: 100%; font-size: 14px; color: var(--muted); margin: 0; }
-  .note[hidden] { display: none; }
-  textarea {
-    width: 100%;
-    min-height: 120px;
-    font: inherit;
-    font-size: 15px;
-    color: var(--ink);
-    background: var(--bg);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 10px;
-  }
-  textarea[hidden] { display: none; }
   footer { color: var(--muted); font-size: 14px; }
-  @media (prefers-reduced-motion: no-preference) {
-    .star { transition: transform 120ms ease; }
-    .star:active { transform: scale(0.88); }
-  }
 </style>
 </head>
 <body>
@@ -224,21 +157,12 @@
 </header>
 <canvas id="snow" class="snow" aria-hidden="true"></canvas>
 <main class="wrap">
-  <p class="intro">Allt du ringade in i Lekias julkatalog, plus kudden och Stray Kids-lightsticken. Tryck på länken för att se saken. <strong>Sätt en stjärna på dina favoriter</strong>, gärna max fem, och tryck sen på knappen längst ner för att kopiera dem och skicka vidare.</p>
+  <p class="intro">Allt du ringade in i Lekias julkatalog, plus kudden och Stray Kids-lightsticken. Tryck på länken för att se saken.</p>
 
   <div id="groups"></div>
 
   <footer>Länkarna går till Lekia, Amazon och en K-pop-butik. När det står ”julkatalogen” hittar du saken i Lekias digitala katalog.</footer>
 </main>
-
-<div class="bar">
-  <div class="bar-inner">
-    <div class="tally"><span>★</span> <b id="favCount">0</b> favoriter valda</div>
-    <button class="copy" id="copyBtn" type="button" disabled>Kopiera mina favoriter</button>
-    <p class="note" id="copyNote" hidden></p>
-    <textarea id="copyFallback" readonly hidden aria-label="Dina favoriter som text"></textarea>
-  </div>
-</div>
 
 <script>
   const KATALOG = "https://www.lekia.se/jul/julkatalog";
@@ -282,20 +206,6 @@
     ]}
   ];
 
-  const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.6l2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg>';
-  const STAR_OUTLINE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 2.6l2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg>';
-  const KEY = "annabelle-onskelista-favs";
-
-  let favs = new Set();
-  try {
-    const saved = JSON.parse(localStorage.getItem(KEY) || "[]");
-    if (Array.isArray(saved)) favs = new Set(saved);
-  } catch (e) { /* storage unavailable: start empty */ }
-
-  function save() {
-    try { localStorage.setItem(KEY, JSON.stringify([...favs])); } catch (e) {}
-  }
-
   const groupsEl = document.getElementById("groups");
   groupsEl.style.display = "grid";
   groupsEl.style.gap = "28px";
@@ -309,13 +219,6 @@
     group.items.forEach(item => {
       const li = document.createElement("li");
       li.className = "item";
-      li.dataset.id = item.id;
-      const btn = document.createElement("button");
-      btn.className = "star";
-      btn.type = "button";
-      btn.id = "star-" + item.id;
-      btn.setAttribute("aria-label", "Favorit: " + item.name);
-      btn.addEventListener("click", () => toggle(item.id));
       const body = document.createElement("div");
       body.className = "body";
       const name = document.createElement("div");
@@ -331,68 +234,13 @@
       a.rel = "noopener";
       a.textContent = item.label + " ↗";
       body.append(name, desc, a);
-      li.append(btn, body);
+      li.append(body);
       ul.append(li);
     });
     sec.append(h, ul);
     groupsEl.append(sec);
   });
 
-  const allItems = GROUPS.flatMap(g => g.items);
-  const countEl = document.getElementById("favCount");
-  const copyBtn = document.getElementById("copyBtn");
-  const note = document.getElementById("copyNote");
-  const fallback = document.getElementById("copyFallback");
-
-  function render() {
-    allItems.forEach(item => {
-      const on = favs.has(item.id);
-      const btn = document.getElementById("star-" + item.id);
-      btn.setAttribute("aria-pressed", on ? "true" : "false");
-      btn.innerHTML = on ? STAR : STAR_OUTLINE;
-      btn.closest(".item").classList.toggle("is-fav", on);
-    });
-    countEl.textContent = favs.size;
-    copyBtn.disabled = favs.size === 0;
-    if (favs.size > 5) {
-      note.hidden = false;
-      note.textContent = "Du har valt fler än fem. Det går bra, men fem är lagom att skicka vidare.";
-    } else if (!note.dataset.copied) {
-      note.hidden = true;
-    }
-  }
-
-  function toggle(id) {
-    favs.has(id) ? favs.delete(id) : favs.add(id);
-    delete note.dataset.copied;
-    fallback.hidden = true;
-    save();
-    render();
-  }
-
-  function favText() {
-    const picked = allItems.filter(i => favs.has(i.id));
-    return "Mina favoriter:\n" + picked.map((i, n) => (n + 1) + ". " + i.name).join("\n");
-  }
-
-  copyBtn.addEventListener("click", async () => {
-    const text = favText();
-    try {
-      await navigator.clipboard.writeText(text);
-      note.dataset.copied = "1";
-      note.hidden = false;
-      note.textContent = "Kopierat! Klistra in det i ett meddelande.";
-      fallback.hidden = true;
-    } catch (e) {
-      note.dataset.copied = "1";
-      note.hidden = false;
-      note.textContent = "Det gick inte att kopiera automatiskt. Markera texten här under och kopiera den själv.";
-      fallback.value = text;
-      fallback.hidden = false;
-    }
-  });
-
-  render();
 </script>
 <script src="../assets/vinter.js"></script>
 <script>

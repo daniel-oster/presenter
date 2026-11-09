@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  /* Layout: a winter scene band on top, then one dark column of grouped rows, a star per row, two favourite fields, snow falling over the page and a sticky bar that copies everything as a message. Single dark winter theme by choice. */
+  /* Layout: a winter scene band on top, then one column of grouped rows, with snow falling over the page. Single dark winter theme by choice. */
   :root {
     --bg: #0f1733;
     --surface: #17224b;
@@ -66,7 +66,7 @@
     font-family: var(--body);
     font-size: 17px;
     line-height: 1.45;
-    padding-bottom: 110px;
+    padding-bottom: 40px;
   }
   .wrap {
     max-width: 680px;
@@ -124,32 +124,14 @@
   }
   .item {
     display: grid;
-    grid-template-columns: 44px 1fr;
+    grid-template-columns: 1fr;
     gap: 12px;
     align-items: start;
-    padding: 14px 16px 14px 10px;
+    padding: 14px 16px;
     border-top: 1px solid var(--line);
   }
   .item:first-child { border-top: 0; }
-  .item.is-fav { background: color-mix(in srgb, var(--star) 10%, var(--surface)); }
-  .star {
-    width: 44px;
-    height: 44px;
-    border: 0;
-    background: transparent;
-    border-radius: 10px;
-    cursor: pointer;
-    display: grid;
-    place-items: center;
-    color: var(--muted);
-    padding: 0;
-  }
-  .star svg { width: 26px; height: 26px; }
-  .star[aria-pressed="true"] { color: var(--star); }
-  .star:focus-visible, .link:focus-visible, .copy:focus-visible, input:focus-visible {
-    outline: 3px solid var(--accent);
-    outline-offset: 2px;
-  }
+  .link:focus-visible { outline: 2px solid var(--star); outline-offset: 2px; }
   .body { display: grid; gap: 4px; padding-top: 2px; min-width: 0; }
   .name { font-weight: 700; font-size: 17px; overflow-wrap: anywhere; }
   .tag {
@@ -175,78 +157,7 @@
   }
   .link:hover { border-bottom-color: var(--link); }
 
-  .faves {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 16px;
-    display: grid;
-    gap: 14px;
-  }
-  .faves p { margin: 0; color: var(--muted); font-size: 15px; }
-  .field { display: grid; gap: 6px; }
-  label { font-weight: 700; font-size: 15px; }
-  input[type="text"] {
-    font: inherit;
-    color: var(--ink);
-    background: var(--bg);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 10px 12px;
-    width: 100%;
-  }
-  input::placeholder { color: color-mix(in srgb, var(--muted) 75%, transparent); }
-
-  .bar {
-    position: fixed;
-    left: 0; right: 0; bottom: 0;
-    background: color-mix(in srgb, var(--surface) 94%, transparent);
-    border-top: 1px solid var(--line);
-    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
-    backdrop-filter: blur(8px);
-    z-index: 20;
-  }
-  .bar-inner {
-    max-width: 680px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-  .tally { font-weight: 700; font-variant-numeric: tabular-nums; }
-  .tally span { color: var(--star); }
-  .copy {
-    font-family: var(--display);
-    font-weight: 500;
-    font-size: 14px;
-    border: 0;
-    border-radius: 999px;
-    padding: 12px 18px;
-    background: var(--accent);
-    color: #1a0c16;
-    cursor: pointer;
-  }
-  .copy:disabled { opacity: 0.4; cursor: default; }
-  .note { width: 100%; font-size: 14px; color: var(--muted); margin: 0; }
-  .note[hidden], textarea[hidden] { display: none; }
-  textarea {
-    width: 100%;
-    min-height: 130px;
-    font: inherit;
-    font-size: 15px;
-    color: var(--ink);
-    background: var(--bg);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 10px;
-  }
   footer { color: var(--muted); font-size: 14px; }
-  @media (prefers-reduced-motion: no-preference) {
-    .star { transition: transform 120ms ease; }
-    .star:active { transform: scale(0.88); }
-  }
 </style>
 </head>
 <body>
@@ -260,34 +171,12 @@
 </header>
 <canvas id="snow" class="snow" aria-hidden="true"></canvas>
 <main class="wrap">
-  <p class="intro">Allt du har önskat dig, samlat på ett ställe. <strong>Sätt en stjärna på det du helst vill ha</strong>, fyll i dina favoriter längst ner och tryck på knappen för att kopiera allt och skicka vidare.</p>
+  <p class="intro">Allt du har önskat dig, samlat på ett ställe.</p>
 
   <div id="groups"></div>
 
-  <section class="faves" aria-labelledby="favesTitle">
-    <h2 id="favesTitle">Dina favoriter</h2>
-    <p>Hjälper den som köper att välja rätt i blindboxarna och bland Stray Kids-sakerna.</p>
-    <div class="field">
-      <label for="favAlnst">Favoritkaraktär i Alien Stage</label>
-      <input type="text" id="favAlnst" placeholder="Till exempel Ivan eller Mizi" autocomplete="off">
-    </div>
-    <div class="field">
-      <label for="favSkz">Favoritmedlem i Stray Kids</label>
-      <input type="text" id="favSkz" placeholder="Till exempel Felix eller Hyunjin" autocomplete="off">
-    </div>
-  </section>
-
   <footer>Länkarna går till Amazon, Akademibokhandeln, AliExpress och en europeisk K-pop-butik. Där det står ”Sök på Amazon” kommer du till en sökning efter saken.</footer>
 </main>
-
-<div class="bar">
-  <div class="bar-inner">
-    <div class="tally"><span>★</span> <b id="favCount">0</b> valda</div>
-    <button class="copy" id="copyBtn" type="button" disabled>Kopiera mina val</button>
-    <p class="note" id="copyNote" hidden></p>
-    <textarea id="copyFallback" readonly hidden aria-label="Dina val som text"></textarea>
-  </div>
-</div>
 
 <script>
   const GROUPS = [
@@ -302,29 +191,12 @@
       { id: "fnaf", name: "Five Nights at Freddy’s, interaktiv bok", desc: "Du väljer själv vad som händer, och det finns över 25 slut. Det finns fyra böcker i serien. Fråga Sarah vilka hon redan har.", url: "https://akademibokhandeln.se/bok/five-nights-at-freddys-the-week-before-an-interactive-novel-1/9781546131113", label: "Se hos Akademibokhandeln" }
     ]},
     { title: "Stray Kids", items: [
-      { id: "skz", name: "Stray Kids-merch", desc: "Till exempel ett SKZOO-gosedjur av din favoritmedlem. Skriv vem det är längst ner.", url: "https://www.bakbak.eu/?p=131896", label: "Se exempel" }
+      { id: "skz", name: "Stray Kids-merch", desc: "Till exempel ett SKZOO-gosedjur av din favoritmedlem.", url: "https://www.bakbak.eu/?p=131896", label: "Se exempel" }
     ]},
     { title: "Skapa", items: [
       { id: "pins", name: "Pinsmaskin (VEVOR, 58 mm)", desc: "Gör egna pins av bilder du skriver ut. 100 pinsämnen ingår.", url: "https://www.amazon.se/s?k=VEVOR+button+maker+58mm", label: "Sök på Amazon" }
     ]}
   ];
-
-  const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.6l2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg>';
-  const STAR_OUTLINE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 2.6l2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg>';
-  const KEY = "sarah-onskelista-v1";
-
-  let state = { favs: [], alnst: "", skz: "" };
-  try {
-    const saved = JSON.parse(localStorage.getItem(KEY) || "null");
-    if (saved && typeof saved === "object") state = Object.assign(state, saved);
-  } catch (e) { /* storage unavailable: start empty */ }
-  let favs = new Set(Array.isArray(state.favs) ? state.favs : []);
-
-  function save() {
-    try {
-      localStorage.setItem(KEY, JSON.stringify({ favs: [...favs], alnst: alnstEl.value, skz: skzEl.value }));
-    } catch (e) {}
-  }
 
   const groupsEl = document.getElementById("groups");
   GROUPS.forEach(group => {
@@ -336,12 +208,6 @@
     group.items.forEach(item => {
       const li = document.createElement("li");
       li.className = "item";
-      const btn = document.createElement("button");
-      btn.className = "star";
-      btn.type = "button";
-      btn.id = "star-" + item.id;
-      btn.setAttribute("aria-label", "Favorit: " + item.name);
-      btn.addEventListener("click", () => toggle(item.id));
       const body = document.createElement("div");
       body.className = "body";
       const name = document.createElement("div");
@@ -364,81 +230,13 @@
       a.rel = "noopener";
       a.textContent = item.label + " ↗";
       body.append(desc, a);
-      li.append(btn, body);
+      li.append(body);
       ul.append(li);
     });
     sec.append(h, ul);
     groupsEl.append(sec);
   });
 
-  const allItems = GROUPS.flatMap(g => g.items);
-  const countEl = document.getElementById("favCount");
-  const copyBtn = document.getElementById("copyBtn");
-  const note = document.getElementById("copyNote");
-  const fallback = document.getElementById("copyFallback");
-  const alnstEl = document.getElementById("favAlnst");
-  const skzEl = document.getElementById("favSkz");
-  alnstEl.value = state.alnst || "";
-  skzEl.value = state.skz || "";
-
-  function hasContent() {
-    return favs.size > 0 || alnstEl.value.trim() !== "" || skzEl.value.trim() !== "";
-  }
-
-  function render() {
-    allItems.forEach(item => {
-      const on = favs.has(item.id);
-      const btn = document.getElementById("star-" + item.id);
-      btn.setAttribute("aria-pressed", on ? "true" : "false");
-      btn.innerHTML = on ? STAR : STAR_OUTLINE;
-      btn.closest(".item").classList.toggle("is-fav", on);
-    });
-    countEl.textContent = favs.size;
-    copyBtn.disabled = !hasContent();
-  }
-
-  function resetNote() {
-    note.hidden = true;
-    fallback.hidden = true;
-  }
-
-  function toggle(id) {
-    favs.has(id) ? favs.delete(id) : favs.add(id);
-    resetNote();
-    save();
-    render();
-  }
-
-  [alnstEl, skzEl].forEach(el => el.addEventListener("input", () => { resetNote(); save(); render(); }));
-
-  function messageText() {
-    const lines = [];
-    const picked = allItems.filter(i => favs.has(i.id));
-    if (picked.length) {
-      lines.push("Det här vill jag helst ha:");
-      picked.forEach((i, n) => lines.push((n + 1) + ". " + i.name));
-    }
-    if (alnstEl.value.trim()) lines.push("Favorit i Alien Stage: " + alnstEl.value.trim());
-    if (skzEl.value.trim()) lines.push("Favorit i Stray Kids: " + skzEl.value.trim());
-    return lines.join("\n");
-  }
-
-  copyBtn.addEventListener("click", async () => {
-    const text = messageText();
-    try {
-      await navigator.clipboard.writeText(text);
-      note.hidden = false;
-      note.textContent = "Kopierat! Klistra in det i ett meddelande.";
-      fallback.hidden = true;
-    } catch (e) {
-      note.hidden = false;
-      note.textContent = "Det gick inte att kopiera automatiskt. Markera texten här under och kopiera den själv.";
-      fallback.value = text;
-      fallback.hidden = false;
-    }
-  });
-
-  render();
 </script>
 <script src="../assets/vinter.js"></script>
 <script>

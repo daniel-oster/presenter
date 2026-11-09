@@ -8,7 +8,7 @@
 | Annabelles önskelista | `annabelle/index.html` | `https://daniel-oster.github.io/presenter/annabelle/` |
 | Sarahs önskelista | `sarah/index.html` | `https://daniel-oster.github.io/presenter/sarah/` |
 
-Allt är vanlig HTML utan byggsteg. Barnen sätter stjärnor på sina favoriter (sparas bara i deras egen webbläsare) och kopierar valen som text till ett sms.
+Allt är vanlig HTML utan byggsteg. Sidorna är till för alla som vill veta vad barnen önskar sig. De är skrivna med barnets röst och har inga knappar eller formulär, bara länkar till sakerna.
 
 ## Vinterscenen
 
