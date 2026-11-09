@@ -224,7 +224,7 @@
 </header>
 <canvas id="snow" class="snow" aria-hidden="true"></canvas>
 <main class="wrap">
-  <p class="intro">Allt du ringade in i Lekias julkatalog, plus kudden och Stray Kids-lightsticken. Tryck på länken för att se saken. <strong>Sätt en stjärna på dina favoriter</strong>, gärna max fem, och tryck sen på knappen längst ner för att skicka dem till pappa.</p>
+  <p class="intro">Allt du ringade in i Lekias julkatalog, plus kudden och Stray Kids-lightsticken. Tryck på länken för att se saken. <strong>Sätt en stjärna på dina favoriter</strong>, gärna max fem, och tryck sen på knappen längst ner för att kopiera dem och skicka vidare.</p>
 
   <div id="groups"></div>
 
@@ -356,7 +356,7 @@
     copyBtn.disabled = favs.size === 0;
     if (favs.size > 5) {
       note.hidden = false;
-      note.textContent = "Du har valt fler än fem. Det går bra, men pappa blir gladast för dina fem bästa.";
+      note.textContent = "Du har valt fler än fem. Det går bra, men fem är lagom att skicka vidare.";
     } else if (!note.dataset.copied) {
       note.hidden = true;
     }
@@ -381,7 +381,7 @@
       await navigator.clipboard.writeText(text);
       note.dataset.copied = "1";
       note.hidden = false;
-      note.textContent = "Kopierat! Klistra in det i ett sms till pappa.";
+      note.textContent = "Kopierat! Klistra in det i ett meddelande.";
       fallback.hidden = true;
     } catch (e) {
       note.dataset.copied = "1";

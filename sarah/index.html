@@ -260,13 +260,13 @@
 </header>
 <canvas id="snow" class="snow" aria-hidden="true"></canvas>
 <main class="wrap">
-  <p class="intro">Allt du har önskat dig, samlat på ett ställe. <strong>Sätt en stjärna på det du helst vill ha</strong>, fyll i dina favoriter längst ner och tryck på knappen för att skicka allt till pappa.</p>
+  <p class="intro">Allt du har önskat dig, samlat på ett ställe. <strong>Sätt en stjärna på det du helst vill ha</strong>, fyll i dina favoriter längst ner och tryck på knappen för att kopiera allt och skicka vidare.</p>
 
   <div id="groups"></div>
 
   <section class="faves" aria-labelledby="favesTitle">
     <h2 id="favesTitle">Dina favoriter</h2>
-    <p>Hjälper pappa att välja rätt i blindboxarna och bland Stray Kids-sakerna.</p>
+    <p>Hjälper den som köper att välja rätt i blindboxarna och bland Stray Kids-sakerna.</p>
     <div class="field">
       <label for="favAlnst">Favoritkaraktär i Alien Stage</label>
       <input type="text" id="favAlnst" placeholder="Till exempel Ivan eller Mizi" autocomplete="off">
@@ -283,7 +283,7 @@
 <div class="bar">
   <div class="bar-inner">
     <div class="tally"><span>★</span> <b id="favCount">0</b> valda</div>
-    <button class="copy" id="copyBtn" type="button" disabled>Kopiera till pappa</button>
+    <button class="copy" id="copyBtn" type="button" disabled>Kopiera mina val</button>
     <p class="note" id="copyNote" hidden></p>
     <textarea id="copyFallback" readonly hidden aria-label="Dina val som text"></textarea>
   </div>
@@ -299,7 +299,7 @@
       { id: "mask", name: "Sovmask med Ivan", desc: "Mjuk sovmask från Passion Love-serien.", url: "https://www.amazon.se/s?k=YJacuing+Alien+Stage+plush+eye+mask+Ivan", label: "Sök på Amazon" }
     ]},
     { title: "Böcker", items: [
-      { id: "fnaf", name: "Five Nights at Freddy’s, interaktiv bok", desc: "Du väljer själv vad som händer, och det finns över 25 slut. Det finns fyra böcker i serien. Skriv till pappa vilka du redan har.", url: "https://akademibokhandeln.se/bok/five-nights-at-freddys-the-week-before-an-interactive-novel-1/9781546131113", label: "Se hos Akademibokhandeln" }
+      { id: "fnaf", name: "Five Nights at Freddy’s, interaktiv bok", desc: "Du väljer själv vad som händer, och det finns över 25 slut. Det finns fyra böcker i serien. Fråga Sarah vilka hon redan har.", url: "https://akademibokhandeln.se/bok/five-nights-at-freddys-the-week-before-an-interactive-novel-1/9781546131113", label: "Se hos Akademibokhandeln" }
     ]},
     { title: "Stray Kids", items: [
       { id: "skz", name: "Stray Kids-merch", desc: "Till exempel ett SKZOO-gosedjur av din favoritmedlem. Skriv vem det är längst ner.", url: "https://www.bakbak.eu/?p=131896", label: "Se exempel" }
@@ -428,7 +428,7 @@
     try {
       await navigator.clipboard.writeText(text);
       note.hidden = false;
-      note.textContent = "Kopierat! Klistra in det i ett sms till pappa.";
+      note.textContent = "Kopierat! Klistra in det i ett meddelande.";
       fallback.hidden = true;
     } catch (e) {
       note.hidden = false;
