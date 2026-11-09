@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Julens önskelistor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Layout: a fixed winter scene fills the screen; the title and one card per child sit in the dawn sky, the village shows below. */
+  :root {
+    --night: #0f1733;
+    --ink: #f7f5ff;
+    --muted: #dfe2f5;
+    --glass: rgba(15, 22, 52, 0.58);
+    --edge: rgba(255, 255, 255, 0.2);
+    --red: #e3424a;
+    --pink: #ff7fb1;
+    --gold: #ffd27a;
+    --display: "Fredoka", "Nunito", "Trebuchet MS", system-ui, sans-serif;
+    --body: "Nunito", "Segoe UI", system-ui, sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--night);
+    color: var(--ink);
+    font-family: var(--body);
+    min-height: 100vh;
+    min-height: 100svh;
+  }
+  #scene {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100lvh;
+    display: block;
+    z-index: 0;
+  }
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 920px;
+    margin: 0 auto;
+    padding: clamp(28px, 7vh, 72px) 20px 32px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .kicker {
+    font-family: var(--display);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 14px;
+    color: var(--gold);
+    text-shadow: 0 1px 10px rgba(10, 14, 40, 0.6);
+  }
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(40px, 8.5vw, 76px);
+    line-height: 1.02;
+    margin: 0;
+    text-wrap: balance;
+    text-shadow: 0 2px 24px rgba(10, 14, 40, 0.55);
+  }
+  .lead {
+    margin: 0;
+    max-width: 44ch;
+    color: var(--muted);
+    font-size: 18px;
+    line-height: 1.45;
+    text-shadow: 0 1px 12px rgba(10, 14, 40, 0.7);
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+    gap: 14px;
+    max-width: 640px;
+    margin-top: 8px;
+  }
+  .card {
+    --accent: var(--red);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 2px 14px;
+    padding: 18px 18px 18px 22px;
+    border-radius: 18px;
+    background: var(--glass);
+    border: 1px solid var(--edge);
+    border-left: 4px solid var(--accent);
+    color: var(--ink);
+    text-decoration: none;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 12px 30px rgba(5, 8, 25, 0.35);
+  }
+  .card.sarah { --accent: var(--pink); }
+  .name { font-family: var(--display); font-weight: 600; font-size: 28px; line-height: 1.1; }
+  .sub { grid-column: 1; color: var(--muted); font-size: 15px; }
+  .go {
+    grid-row: 1 / span 2;
+    grid-column: 2;
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--accent);
+    color: #1a0d14;
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .card:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .go { transition: transform 160ms ease; }
+    .card:hover .go { transform: translateX(4px); }
+  }
+</style>
+</head>
+<body>
+<canvas id="scene" aria-hidden="true"></canvas>
+<main>
+  <div class="kicker">God jul 2026</div>
+  <h1>Julens önskelistor</h1>
+  <p class="lead">Öppna din lista, sätt stjärnor på det du önskar dig mest och skicka valen till pappa.</p>
+  <nav class="cards" aria-label="Önskelistor">
+    <a class="card annabelle" href="annabelle/">
+      <span class="name">Annabelle</span>
+      <span class="sub">Önskelista</span>
+      <span class="go" aria-hidden="true">→</span>
+    </a>
+    <a class="card sarah" href="sarah/">
+      <span class="name">Sarah</span>
+      <span class="sub">Önskelista</span>
+      <span class="go" aria-hidden="true">→</span>
+    </a>
+  </nav>
+</main>
+<script src="assets/vinter.js"></script>
+<script>
+  Vinter.scene(document.getElementById("scene"), { horizon: 0.62, bigSnow: true, seed: 2026 });
+</script>
+</body>
+</html>

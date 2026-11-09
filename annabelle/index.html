@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Annabelles önskelista</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Layout: a winter scene band on top, then one column of grouped rows with a star on each row, snow falling over the page, and a sticky bar that collects the starred wishes. Single dark winter theme by choice. */
+  :root {
+    --bg: #0f1733;
+    --surface: #17224b;
+    --ink: #f5f6fc;
+    --muted: #b4bddc;
+    --accent: #e3424a;
+    --link: #ffd27a;
+    --line: #283a6e;
+    --star: #ffd27a;
+    --display: "Fredoka", "Nunito", "Trebuchet MS", system-ui, sans-serif;
+    --body: "Nunito", "Segoe UI", system-ui, sans-serif;
+    color-scheme: dark;
+  }
+
+  .hero { position: relative; display: block; height: clamp(290px, 40vw, 380px); overflow: hidden; }
+  .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .hero::after {
+    content: "";
+    position: absolute; left: 0; right: 0; bottom: 0;
+    height: 56px;
+    background: linear-gradient(to bottom, rgba(15, 23, 51, 0), var(--bg));
+    pointer-events: none;
+  }
+  .hero-text {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 16px 16px 0;
+    display: grid;
+    align-content: start;
+    gap: 6px;
+  }
+  .hero h1 { color: #ffffff; text-shadow: 0 2px 18px rgba(8, 12, 36, 0.65); }
+  .hero .kicker { color: var(--link); text-shadow: 0 1px 10px rgba(8, 12, 36, 0.6); }
+  .back {
+    justify-self: start;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 6px 0;
+    text-shadow: 0 1px 10px rgba(8, 12, 36, 0.6);
+  }
+  .back:hover { text-decoration: underline; }
+  .back:focus-visible { outline: 3px solid var(--link); outline-offset: 2px; }
+  .snow { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 30; }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.45;
+    padding-bottom: 96px;
+  }
+  .wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 12px 16px 16px;
+    display: grid;
+    gap: 28px;
+  }
+  header { display: grid; gap: 8px; }
+  .kicker {
+    font-family: var(--display);
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 15px;
+    letter-spacing: 0.02em;
+  }
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(34px, 8vw, 48px);
+    line-height: 1.05;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .intro { margin: 0; color: var(--muted); max-width: 60ch; }
+  .intro strong { color: var(--ink); }
+
+  section { display: grid; gap: 10px; }
+  h2 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 22px;
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    text-wrap: balance;
+  }
+  h2 .count {
+    font-family: var(--body);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  ul { list-style: none; margin: 0; padding: 0; }
+  .list {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .item {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 12px;
+    align-items: start;
+    padding: 14px 16px 14px 10px;
+    border-top: 1px solid var(--line);
+  }
+  .item:first-child { border-top: 0; }
+  .item.is-fav { background: color-mix(in srgb, var(--star) 12%, var(--surface)); }
+  .star {
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+    padding: 0;
+  }
+  .star svg { width: 26px; height: 26px; }
+  .star[aria-pressed="true"] { color: var(--star); }
+  .star:focus-visible, .link:focus-visible, .copy:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .body { display: grid; gap: 4px; padding-top: 2px; min-width: 0; }
+  .name { font-weight: 700; font-size: 17px; overflow-wrap: anywhere; }
+  .desc { color: var(--muted); font-size: 15px; }
+  .link {
+    justify-self: start;
+    margin-top: 4px;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--link);
+    text-decoration: none;
+    border-bottom: 2px solid color-mix(in srgb, var(--link) 35%, transparent);
+  }
+  .link:hover { border-bottom-color: var(--link); }
+
+  .bar {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    z-index: 20;
+  }
+  .bar-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .tally { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .tally span { color: var(--star); }
+  .copy {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 16px;
+    border: 0;
+    border-radius: 999px;
+    padding: 11px 18px;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+  }
+  .copy:disabled { opacity: 0.45; cursor: default; }
+  .note { width: 100%; font-size: 14px; color: var(--muted); margin: 0; }
+  .note[hidden] { display: none; }
+  textarea {
+    width: 100%;
+    min-height: 120px;
+    font: inherit;
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px;
+  }
+  textarea[hidden] { display: none; }
+  footer { color: var(--muted); font-size: 14px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .star { transition: transform 120ms ease; }
+    .star:active { transform: scale(0.88); }
+  }
+</style>
+</head>
+<body>
+<header class="hero">
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="hero-text">
+    <a class="back" href="../">← Alla önskelistor</a>
+    <div class="kicker">God jul 2026</div>
+    <h1>Annabelles önskelista</h1>
+  </div>
+</header>
+<canvas id="snow" class="snow" aria-hidden="true"></canvas>
+<main class="wrap">
+  <p class="intro">Allt du ringade in i Lekias julkatalog, plus kudden och Stray Kids-lightsticken. Tryck på länken för att se saken. <strong>Sätt en stjärna på dina favoriter</strong>, gärna max fem, och tryck sen på knappen längst ner för att skicka dem till pappa.</p>
+
+  <div id="groups"></div>
+
+  <footer>Länkarna går till Lekia, Amazon och en K-pop-butik. När det står ”julkatalogen” hittar du saken i Lekias digitala katalog.</footer>
+</main>
+
+<div class="bar">
+  <div class="bar-inner">
+    <div class="tally"><span>★</span> <b id="favCount">0</b> favoriter valda</div>
+    <button class="copy" id="copyBtn" type="button" disabled>Kopiera mina favoriter</button>
+    <p class="note" id="copyNote" hidden></p>
+    <textarea id="copyFallback" readonly hidden aria-label="Dina favoriter som text"></textarea>
+  </div>
+</div>
+
+<script>
+  const KATALOG = "https://www.lekia.se/jul/julkatalog";
+  const GROUPS = [
+    { title: "Kameror", items: [
+      { id: "instant", name: "Instantkamera som skriver ut bilder", desc: "Creator Instant Color Printing Camera 3.0. Ta en bild och få den utskriven i färg direkt.", url: KATALOG, label: "Se i julkatalogen" },
+      { id: "minicam", name: "Minikamera på nyckelring", desc: "Creator Mini Cam’. Pytteliten kamera med skärm och roliga filter.", url: KATALOG, label: "Se i julkatalogen" }
+    ]},
+    { title: "K-pop", items: [
+      { id: "skz-lightstick", name: "Stray Kids Light Stick", desc: "Officiella lightsticken Ver.2. Lyser i olika färger och kan styras med en app.", url: "https://www.littlewonderland.nl/en/stray-kids-official-lightstick-ver2.html", label: "Se i butiken" },
+      { id: "bitzee-stage", name: "Bitzee Stage", desc: "Digitalt husdjur med 13 KPDH-figurer, minispel och musik.", url: "https://www.lekia.se/varumarken/k-pop-demon-hunters", label: "Se hos Lekia" },
+      { id: "tattoo", name: "Glittertatueringar (Cool Maker Shimmer Me)", desc: "Gör tillfälliga tatueringar med glitterfolie och dekorstenar.", url: "https://www.lekia.se/varumarken/k-pop-demon-hunters", label: "Se hos Lekia" }
+    ]},
+    { title: "Samla och miniatyrer", items: [
+      { id: "lol", name: "L.O.L. Surprise Music Festival", desc: "Vilken vill du ha? Det finns små dockor, möbelset och stora OMG-dockor (K-pop eller Latin).", url: KATALOG, label: "Se i julkatalogen" },
+      { id: "mymini-baby", name: "My Mini Baby Birthday", desc: "Överraskningskapsel med en minibebis och kalastillbehör.", url: "https://www.lekia.se/leksaker/blind-box/my-mini-my-mini-baby-birthday-s1", label: "Se hos Lekia" },
+      { id: "mymini-pets", name: "My Mini Pets", desc: "Överraskningskapsel med ett minidjur och dess lilla hem.", url: "https://www.lekia.se/leksaker/blind-box", label: "Se hos Lekia" },
+      { id: "kitchen", name: "Mini Magic Cook Kitchen", desc: "Minikök där diskmaskinen fungerar och spisen ångar på riktigt.", url: "https://www.lekia.se/leksaker/rollek/kok", label: "Se hos Lekia" },
+      { id: "bitzee", name: "Bitzee interaktivt husdjur", desc: "Digitalt husdjur som reagerar när du rör vid det. Välj den här eller Bitzee Stage.", url: "https://www.lekia.se/leksaker/djur/interaktiva-djur", label: "Se hos Lekia" }
+    ]},
+    { title: "Bygga och skapa", items: [
+      { id: "magplay", name: "Minecraft-kuber (Mag&Play)", desc: "Magnetiska kuber på 2 cm som ser ut som Minecraft-block.", url: "https://www.lekia.se/varumarken/mag-play", label: "Se hos Lekia" },
+      { id: "lego-tulips", name: "LEGO-tulpaner", desc: "LEGO Botanicals bukett med tulpaner att bygga och ställa i en vas.", url: "https://www.lekia.se/leksaker/lego-shop/lego%C2%AE-botanicals-bukett-med-tulpaner-blomsterprydnad-11501", label: "Se hos Lekia" },
+      { id: "giftie", name: "Pinsmaskin (Giftie Badge Maker)", desc: "Gör egna pins av bilder och motiv. 50 pins ingår.", url: "https://www.lekia.se/presenttips", label: "Se hos Lekia" },
+      { id: "kinetic", name: "Kinetic Sand", desc: "Vilket set vill du ha? Café, godisstation, enhörning eller en sandlåda.", url: "https://www.lekia.se/varumarken/kinetic-sand", label: "Se hos Lekia" }
+    ]},
+    { title: "Stenar och kristaller", items: [
+      { id: "crystals", name: "Odla egna kristaller", desc: "Discovery Growing Kit. Odla kristaller i tre färger.", url: "https://www.lekia.se/leksaker/experiment-och-teknik/discovery-growing-kit", label: "Se hos Lekia" },
+      { id: "geode", name: "Geodkit", desc: "Knacka upp riktiga stenar och hitta kristaller inuti.", url: "https://www.lekia.se/leksaker/experiment-och-teknik/discovery-crystals-geode-excavation-kit", label: "Se hos Lekia" },
+      { id: "tumbler", name: "Stentumlare", desc: "Maskin som slipar vanliga stenar till blanka ädelstenar.", url: "https://www.lekia.se/leksaker/experiment-och-teknik", label: "Se hos Lekia" }
+    ]},
+    { title: "Spel och lek", items: [
+      { id: "poo", name: "Poo Fighters", desc: "Radiostyrd toalettduell för två. Stöt till den andra så att bajset flyger.", url: "https://www.lekia.se/leksaker/leksaksbilar-och-fordon/radiostyrt/poo-fighters", label: "Se hos Lekia" },
+      { id: "trav", name: "Travspelet med V85", desc: "Klassiskt brädspel där du satsar på hästar och tränar fram vinnare.", url: "https://www.lekia.se/varumarken/alga", label: "Se hos Lekia" },
+      { id: "safe", name: "Kassaskåp med kodlås", desc: "Spy Agent Code Mission. Lås in pengar och hemligheter.", url: "https://www.lekia.se/leksaker/experiment-och-teknik", label: "Se hos Lekia" },
+      { id: "doctor", name: "Doktorsväska", desc: "26 delar med stetoskop, termometer och plåster.", url: "https://www.lekia.se/leksaker/kalas-och-maskerad/drakter-och-tillbehor/doktorsvaska-26-delar", label: "Se hos Lekia" },
+      { id: "vacuum", name: "Leksaksdammsugare", desc: "PAP-dammsugare som suger på riktigt, med ljud och ljus.", url: "https://www.lekia.se/varumarken/pap", label: "Se hos Lekia" }
+    ]},
+    { title: "Till rummet", items: [
+      { id: "pillow", name: "Kudde i memoryskum", desc: "HOMCA-kudde med två höjder.", url: "https://amzn.eu/d/0gcDMf2O", label: "Se på Amazon" }
+    ]}
+  ];
+
+  const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.6l2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg>';
+  const STAR_OUTLINE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 2.6l2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg>';
+  const KEY = "annabelle-onskelista-favs";
+
+  let favs = new Set();
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY) || "[]");
+    if (Array.isArray(saved)) favs = new Set(saved);
+  } catch (e) { /* storage unavailable: start empty */ }
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify([...favs])); } catch (e) {}
+  }
+
+  const groupsEl = document.getElementById("groups");
+  groupsEl.style.display = "grid";
+  groupsEl.style.gap = "28px";
+
+  GROUPS.forEach(group => {
+    const sec = document.createElement("section");
+    const h = document.createElement("h2");
+    h.innerHTML = group.title + ' <span class="count">' + group.items.length + "</span>";
+    const ul = document.createElement("ul");
+    ul.className = "list";
+    group.items.forEach(item => {
+      const li = document.createElement("li");
+      li.className = "item";
+      li.dataset.id = item.id;
+      const btn = document.createElement("button");
+      btn.className = "star";
+      btn.type = "button";
+      btn.id = "star-" + item.id;
+      btn.setAttribute("aria-label", "Favorit: " + item.name);
+      btn.addEventListener("click", () => toggle(item.id));
+      const body = document.createElement("div");
+      body.className = "body";
+      const name = document.createElement("div");
+      name.className = "name";
+      name.textContent = item.name;
+      const desc = document.createElement("div");
+      desc.className = "desc";
+      desc.textContent = item.desc;
+      const a = document.createElement("a");
+      a.className = "link";
+      a.href = item.url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.textContent = item.label + " ↗";
+      body.append(name, desc, a);
+      li.append(btn, body);
+      ul.append(li);
+    });
+    sec.append(h, ul);
+    groupsEl.append(sec);
+  });
+
+  const allItems = GROUPS.flatMap(g => g.items);
+  const countEl = document.getElementById("favCount");
+  const copyBtn = document.getElementById("copyBtn");
+  const note = document.getElementById("copyNote");
+  const fallback = document.getElementById("copyFallback");
+
+  function render() {
+    allItems.forEach(item => {
+      const on = favs.has(item.id);
+      const btn = document.getElementById("star-" + item.id);
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+      btn.innerHTML = on ? STAR : STAR_OUTLINE;
+      btn.closest(".item").classList.toggle("is-fav", on);
+    });
+    countEl.textContent = favs.size;
+    copyBtn.disabled = favs.size === 0;
+    if (favs.size > 5) {
+      note.hidden = false;
+      note.textContent = "Du har valt fler än fem. Det går bra, men pappa blir gladast för dina fem bästa.";
+    } else if (!note.dataset.copied) {
+      note.hidden = true;
+    }
+  }
+
+  function toggle(id) {
+    favs.has(id) ? favs.delete(id) : favs.add(id);
+    delete note.dataset.copied;
+    fallback.hidden = true;
+    save();
+    render();
+  }
+
+  function favText() {
+    const picked = allItems.filter(i => favs.has(i.id));
+    return "Mina favoriter:\n" + picked.map((i, n) => (n + 1) + ". " + i.name).join("\n");
+  }
+
+  copyBtn.addEventListener("click", async () => {
+    const text = favText();
+    try {
+      await navigator.clipboard.writeText(text);
+      note.dataset.copied = "1";
+      note.hidden = false;
+      note.textContent = "Kopierat! Klistra in det i ett sms till pappa.";
+      fallback.hidden = true;
+    } catch (e) {
+      note.dataset.copied = "1";
+      note.hidden = false;
+      note.textContent = "Det gick inte att kopiera automatiskt. Markera texten här under och kopiera den själv.";
+      fallback.value = text;
+      fallback.hidden = false;
+    }
+  });
+
+  render();
+</script>
+<script src="../assets/vinter.js"></script>
+<script>
+  Vinter.scene(document.getElementById("scene"), { horizon: 0.63, band: true, seed: 11 });
+  Vinter.snow(document.getElementById("snow"), { density: 0.7 });
+</script>
+</body>
+</html>
